@@ -32,12 +32,37 @@ namespace Xyl.Test
         }
     }
 
+    public class ApplicationRoleManager : RoleManager<ApplicationRole, string>
+    {
+        public ApplicationRoleManager(IRoleStore<ApplicationRole, string> store) : base(store)
+        {
+        }
+
+        public static ApplicationRoleManager Create(IOwinContext context)
+        {
+            var manager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(context.Get<ApplicationDbContext>()));
+            return manager;
+        }
+
+        public static ApplicationRoleManager Create(ApplicationDbContext context)
+        {
+            var manager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(context));
+            return manager;
+        }
+    }
+
     // 配置此应用程序中使用的应用程序用户管理器。UserManager 在 ASP.NET Identity 中定义，并由此应用程序使用。
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
+        }
+
+        public static ApplicationUserManager Create(ApplicationDbContext context)
+        {
+            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
+            return manager;
         }
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 

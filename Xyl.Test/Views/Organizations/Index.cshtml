@@ -1,0 +1,132 @@
+﻿@model PagedList.IPagedList<Xyl.Test.Models.Data.Organization>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>机构管理</h2>
+<p>
+    <a href="@Url.Action("Create", "Organizations")" class="btn btn-default">
+        <span>新增</span>
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+    </a>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Create Task</button>
+</p>
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+@using (Html.BeginForm("Index", "Organizations", FormMethod.Get))
+{
+    <p>
+        Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", @Style = "display:inline" })
+        <button type="submit" class="btn btn-default" ><span class="glyphicon glyphicon-search"></span><span>Search</span></button>
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            Parent.Name
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            State
+        </th>
+        <th>
+            <a href="@Url.Action("Index", "Organizations",new { sortOrder = ViewBag.SortParm })" >
+                <span>排序</span>
+                <span class="glyphicon @(ViewBag.SortParm=="sort_desc"?"glyphicon-arrow-up":"glyphicon-arrow-down")" aria-hidden="true"></span>
+            </a>
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Parent.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <h3 class="label @(item.State == Xyl.Test.Models.Data.OrgState.Disable? "label-danger":"label-primary")">@item.State</h3>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sort)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+<!-- 按钮触发模态框 -->
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+    开始演示模态框
+</button>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    模态框（Modal）标题
+                </h4>
+            </div>
+            <div class="modal-body">
+                @Html.Action("Create")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+                <button type="button" class="btn btn-primary">
+                    提交更改
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+
+<script type="text/javascript">
+    //异步开始提交时，显示遮罩层
+    function beginPost(modalId) {
+        debugger;
+        console.log(modalId);
+        var $modal = $(modalId);
+
+    }
+
+    //异步开始提交结束后，隐藏遮罩层并清空Form
+    function hideForm(modalId) {
+        debugger;
+        console.log(modalId);
+        var $modal = $(modalId);
+
+        var $form = $modal.find("form");
+        abp.ui.clearBusy($modal);
+        $modal.modal("hide");
+        //创建成功后，要清空form表单
+        $form[0].reset();
+    }
+
+    //处理异步提交异常
+    function errorPost(xhr, status, error, modalId) {
+        debugger;
+        console.log(xhr, status, error, modalId);
+    }
+
+</script>
